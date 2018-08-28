@@ -12,6 +12,8 @@ params = {
 conn = pymysql.Connect(**params)
 print('-连接成功--')
 
+create student database ;
+
 cursor = conn.cursor()
 cursor.execute('desc user')
 for row in cursor.fetchall():
