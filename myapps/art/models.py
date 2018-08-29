@@ -4,6 +4,9 @@ import os
 from django.db import models
 
 # Create your models here.
+from DjangoUeditor.models import UEditorField
+
+
 class Tag(models.Model):
     # name, describe, add_time
     name = models.CharField(max_length=50,
@@ -129,7 +132,13 @@ class Chapter(models.Model):
     name = models.CharField(max_length=50,
                             verbose_name='名称')
 
-    content = models.TextField(verbose_name='内容')
+    # 修改为UEditor的富文本字段
+    content = UEditorField(verbose_name='内容',
+                           width=600,
+                           height=800,
+                           imagePath='ueditor/art/images/',
+                           toolbars='full')  # mini, normal, full
+
     publish_date = models.DateTimeField(verbose_name='发布时间',
                                         auto_now_add=True)
 

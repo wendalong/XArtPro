@@ -61,6 +61,9 @@ class ChapterAdmin:
     list_display = ('name', 'roll', 'publish_date')
     list_per_page = 10  # 每页显示的记录数
 
+    # 设置指定字段的样式
+    style_fields = {'content': 'ueditor'}
+
 
 xadmin.site.register(Tag, TagAdmin)
 xadmin.site.register(Category, CategoryAdmin)

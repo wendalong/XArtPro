@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'art',
+    'DjangoUeditor',  # 加入富文本插件
 ]
 
 MIDDLEWARE = [
