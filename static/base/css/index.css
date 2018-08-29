@@ -15,6 +15,16 @@
 #art li{
     margin: 5px;
 }
+
 #art dd {
     padding: 2px 0;
+}
+
+/* 清除浮动 */
+#art ul:after{
+    display: block;
+    content: '';
+    height: 0;
+    overflow: hidden;
+    clear: both;
 }
