@@ -5,7 +5,7 @@ import xadmin  # 第三方模块
 from xadmin import views
 
 
-from art.models import Tag, Category, Art  # 自定义模块
+from art.models import Tag, Category, Art, RollSet, Chapter  # 自定义模块
 
 # Register your models here.
 
@@ -52,6 +52,20 @@ class ArtAdmin:
     list_per_page = 10  # 每页显示的记录数
 
 
+class RollAdmin:
+    list_display = ('name', 'free_level_name', 'art')
+    list_per_page = 10  # 每页显示的记录数
+
+
+class ChapterAdmin:
+    list_display = ('name', 'roll', 'publish_date')
+    list_per_page = 10  # 每页显示的记录数
+
+
 xadmin.site.register(Tag, TagAdmin)
 xadmin.site.register(Category, CategoryAdmin)
 xadmin.site.register(Art, ArtAdmin)
+
+xadmin.site.register(RollSet, RollAdmin)
+xadmin.site.register(Chapter, ChapterAdmin)
+

@@ -1,3 +1,6 @@
+import uuid
+
+import os
 from django.db import models
 
 # Create your models here.
@@ -28,8 +31,12 @@ class Category(models.Model):
     add_time = models.DateTimeField(auto_now_add=True,
                                     verbose_name='添加时间')
 
-    # 父分类关系？
-    # parentCate = models.ForeignKey(Category, )
+    # 父分类关系？未声明先引用： '类名' 或 'self'
+    parent = models.ForeignKey('self',
+                               verbose_name='所属分类',
+                               on_delete=models.SET_NULL,
+                               null=True,
+                               blank=True)  # 后台管理页面中是否可以为空(验证)
 
     def __str__(self):
         return self.title
@@ -38,6 +45,11 @@ class Category(models.Model):
         db_table = 't_category'
         verbose_name = '小说分类'
         verbose_name_plural = verbose_name
+
+
+def save_file_path(instance, filename):
+    new_file_name = str(uuid.uuid4()).replace('-', '')+os.path.splitext(filename)[-1]
+    return 'arts/{}'.format(new_file_name)
 
 
 class Art(models.Model):
@@ -54,6 +66,19 @@ class Art(models.Model):
                                         verbose_name='发布时间')
 
     # 文章的封面图片 cover
+    # 依赖 pillow（PIL） 库: pip install pillow
+    cover = models.ImageField(verbose_name='封面',
+                              upload_to=save_file_path,  # 相对MEDIA_ROOT
+                              null=True,
+                              blank=True)  # ？上传的文件名如何重命名
+
+    # 自定义upload_to函数
+    # def user_directory_path(instance, filename):
+    #      # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    #      return 'user_{0}/{1}'.format(instance.user.id, filename)
+
+    # class MyModel(models.Model):
+    #     upload = models.FileField(upload_to=user_directory_path)
 
     category = models.ForeignKey(Category,
                                  on_delete=models.CASCADE,
@@ -69,3 +94,54 @@ class Art(models.Model):
         verbose_name = '文章'
         verbose_name_plural = verbose_name
         ordering = ['-publish_date']
+
+
+class RollSet(models.Model):
+
+    free_levels = ((0, '免费'), (1, 'VIP'))
+
+    name = models.CharField(max_length=50,
+                            unique=True,
+                            verbose_name='名称')
+
+    free_level = models.IntegerField(verbose_name='免费级别',
+                                     choices=free_levels,
+                                     default=0)
+    art = models.ForeignKey(Art,
+                            on_delete=models.CASCADE,
+                            verbose_name='所属文章')
+
+    @property
+    def free_level_name(self):
+        return self.free_levels[self.free_level][1]
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 't_roll'
+        verbose_name = '卷集'
+        verbose_name_plural = verbose_name
+        ordering = ['id']
+
+
+class Chapter(models.Model):
+    name = models.CharField(max_length=50,
+                            verbose_name='名称')
+
+    content = models.TextField(verbose_name='内容')
+    publish_date = models.DateTimeField(verbose_name='发布时间',
+                                        auto_now_add=True)
+
+    roll = models.ForeignKey(RollSet,
+                             on_delete=models.CASCADE,
+                             verbose_name='所属卷集')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 't_chapter'
+        verbose_name = '章节'
+        verbose_name_plural = verbose_name
+        ordering = ['publish_date']
